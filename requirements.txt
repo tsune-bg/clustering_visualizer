@@ -1,0 +1,6 @@
+# python 3.11.10
+streamlit
+pandas
+numpy
+matplotlib
+seaborn
