@@ -52,5 +52,5 @@ def animation_kmeans(X, center_history, label_history):
         ax.set_xticks([])
         ax.set_yticks([])
 
-    anim = animation.FuncAnimation(fig, update, frames=len(label_history), interval=1000)
+    anim = animation.FuncAnimation(fig, update, frames=len(label_history), interval=750)
     return anim
