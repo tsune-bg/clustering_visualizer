@@ -1,37 +1,42 @@
 import streamlit as st
+import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 import os
+import time
+
+from src import visualization
+
+
+DATASETS_DIR = './data'
+
 
 # タイトルの表示
-st.title('CSV ファイルの選択と表示')
+st.title('Clustering Visualizer')
 
-# CSV ファイルが格納されているディレクトリのパス
-DATASETS_DIR = './datasets'
+# セレクトボックスでファイルを選択
+csv_files = [f for f in os.listdir(DATASETS_DIR) if f.endswith('.csv')]
+selected_file = st.selectbox('Select a dataset', csv_files)
 
-# ディレクトリが存在するか確認
-if not os.path.isdir(DATASETS_DIR):
-    st.error(f'ディレクトリ "{DATASETS_DIR}" が存在しません。')
-else:
-    # ディレクトリ内の CSV ファイルを取得
-    csv_files = [f for f in os.listdir(DATASETS_DIR) if f.endswith('.csv')]
+# CSV を読み込む
+file_path = os.path.join(DATASETS_DIR, selected_file)
+df = pd.read_csv(file_path)
 
-    if not csv_files:
-        st.warning('CSV ファイルが見つかりません。')
-    else:
-        # セレクトボックスでファイルを選択
-        selected_file = st.selectbox('表示する CSV ファイルを選択してください。', csv_files)
+# データセットの描画
+fig = visualization.plot_dataset(df)
+st.pyplot(fig, use_container_width=False)
 
-        # ファイルのパスを作成
-        file_path = os.path.join(DATASETS_DIR, selected_file)
+# スタートボタンを作成
+start_button = st.button("Start Animation")
 
-        try:
-            # CSV を読み込む
-            df = pd.read_csv(file_path)
+if start_button:
+    num_frames = 10
+    plot_placeholder = st.empty()
 
-            st.success(f'ファイル "{selected_file}" の読み込みに成功しました。')
+    for i in range(num_frames):
+        fig = visualization.plot_dataset(df)
+        fig.suptitle(f"Frame: {i}")
+        plot_placeholder.pyplot(fig, use_container_width=False)
 
-            # DataFrame の先頭を表示
-            st.subheader('DataFrame の先頭 5 行')
-            st.dataframe(df.head())
-        except Exception as e:
-            st.error(f'ファイルの読み込み中にエラーが発生しました: {e}')
+        time.sleep(0.75)
