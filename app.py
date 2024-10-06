@@ -25,8 +25,8 @@ fig = visualization.plot_dataset(df)
 st.pyplot(fig, use_container_width=False)
 
 
-k = st.number_input('Number of cluster', min_value=2, max_value=5)
-random_state = st.number_input('Seed of random number', min_value=0, max_value=100)
+k = st.number_input('Number of cluster', min_value=2, max_value=5, value=2)
+random_state = st.number_input('Seed of random number', min_value=0, max_value=100, value=42)
 
 start_button = st.button("Start Animation")
 if start_button:
