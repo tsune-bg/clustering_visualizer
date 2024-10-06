@@ -1,12 +1,9 @@
 import streamlit as st
-import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 import os
-import time
+import streamlit.components.v1 as components
 
-from src import visualization
+from src import visualization, clustering
 
 
 DATASETS_DIR = './data'
@@ -27,16 +24,14 @@ df = pd.read_csv(file_path)
 fig = visualization.plot_dataset(df)
 st.pyplot(fig, use_container_width=False)
 
-# スタートボタンを作成
+
+k = st.number_input('Number of cluster', min_value=2, max_value=5)
+random_state = st.number_input('Seed of random number', min_value=0, max_value=100)
+
 start_button = st.button("Start Animation")
-
 if start_button:
-    num_frames = 10
-    plot_placeholder = st.empty()
+    X = df[['x', 'y']].to_numpy()
+    center_history, label_history = clustering.kmeans(X, k, random_state)
+    anim = visualization.animation_kmeans(X, center_history, label_history)
 
-    for i in range(num_frames):
-        fig = visualization.plot_dataset(df)
-        fig.suptitle(f"Frame: {i}")
-        plot_placeholder.pyplot(fig, use_container_width=False)
-
-        time.sleep(0.75)
+    components.html(anim.to_jshtml(), height=1000)
