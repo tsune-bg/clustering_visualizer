@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.figure as figure
 import matplotlib.animation as animation
 import seaborn as sns
 
@@ -8,10 +9,13 @@ sns.set_theme()
 
 
 def plot_dataset(df):
-    fig, ax = plt.subplots(1, 1, figsize=[3, 3])
     xlim = (df['x'].min() - 0.1, df['x'].max() + 0.1)
     ylim = (df['y'].min() - 0.1, df['y'].max() + 0.1)
-    ax.scatter(df['x'], df['y'], c=df['label'], s=2, cmap='tab10')
+    height = 1
+    fig, ax = plt.subplots(figsize=(height * (xlim[1] - xlim[0]) / (ylim[1] - ylim[0]), height))
+    # fig, ax = plt.subplots(figsize=[3, 3])
+
+    ax.scatter(df['x'], df['y'], c=df['label'], s=1, cmap='tab10')
     ax.set_aspect('equal')
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
@@ -20,7 +24,10 @@ def plot_dataset(df):
     return fig
 
 def animation_kmeans(X, center_history, label_history):
-    fig, ax = plt.subplots()
+    xlim = (X[:, 0].min() - 0.1, X[:, 0].max() + 0.1)
+    ylim = (X[:, 1].min() - 0.1, X[:, 1].max() + 0.1)
+    height = 4
+    fig, ax = plt.subplots(figsize=(height * (xlim[1] - xlim[0]) / (ylim[1] - ylim[0]), height))
 
     def update(step):
         ax.clear()
@@ -47,6 +54,7 @@ def animation_kmeans(X, center_history, label_history):
         )
 
         ax.legend()
+        ax.set_aspect('equal')
         ax.set_xlim(np.min(X[:, 0]) - 1, np.max(X[:, 0]) + 1)
         ax.set_ylim(np.min(X[:, 1]) - 1, np.max(X[:, 1]) + 1)
         ax.set_xticks([])
