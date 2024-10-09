@@ -1,6 +1,6 @@
 import numpy as np
+from scipy.cluster.hierarchy import dendrogram
 import matplotlib.pyplot as plt
-import matplotlib.figure as figure
 import matplotlib.animation as animation
 import seaborn as sns
 
@@ -62,3 +62,56 @@ def animation_kmeans(X, center_history, label_history):
 
     anim = animation.FuncAnimation(fig, update, frames=len(label_history), interval=750)
     return anim
+
+def animation_hierarchical_clustering(X, Z):
+    cluster_centers = {i: X[i] for i in range(len(X))}
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+    ax1.set_title('Hierarchical Clustering (Ward Method)')
+    ax1.set_xlabel('X')
+    ax1.set_ylabel('Y')
+
+    ax1.scatter(X[:, 0], X[:, 1], s=1)
+    dendrogram(Z, ax=ax2, no_plot=True)
+    ax2.set_title('Dendrogram')
+
+    # link_colors = {i: 'gray' for i in range(len(Z))}
+
+    lines =[]
+    def update(i):
+        # 既存の線をクリア（デンドログラム更新用）
+        ax2.cla()
+        
+        # 各リンクのペアを取得
+        cluster_1 = int(Z[i, 0])
+        cluster_2 = int(Z[i, 1])
+
+        # 結合されたクラスタの重心を計算
+        new_center = (cluster_centers[cluster_1] + cluster_centers[cluster_2]) / 2.0
+
+        # クラスタの重心を更新
+        cluster_centers[len(X) + i] = new_center
+
+        # 各クラスタの点を結ぶ線を描画
+        line, = ax1.plot(
+            [cluster_centers[cluster_1][0], cluster_centers[cluster_2][0]],
+            [cluster_centers[cluster_1][1], cluster_centers[cluster_2][1]],
+            'r-', lw=2
+        )
+        lines.append(line)
+
+        # # 現在の結合ステップを赤、過去の結合を黒に設定
+        # link_colors[i] = 'red'  # 現在のリンクは赤色に設定
+        # for j in range(i):
+        #     link_colors[j] = 'black'  # 過去のリンクは黒色に設定
+
+        # デンドログラムの更新（i+1回目の結合を表示）
+        dendrogram(Z, ax=ax2, color_threshold=Z[i, 2], no_labels=True)
+        # dendrogram(Z, ax=ax2, color_threshold=Z[i, 2], link_color_func=lambda k: link_colors[k], no_labels=True)
+        ax2.set_title(f'Dendrogram - Step {i+1}')
+    
+        return line
+
+    anim = animation.FuncAnimation(fig, update, frames=len(Z), interval=10)
+    return anim
+

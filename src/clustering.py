@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as pd
+from scipy.cluster.hierarchy import linkage
 
 
 def kmeans(X, k, random_state=42):
@@ -28,3 +28,6 @@ def kmeans(X, k, random_state=42):
         center_history.append(centers.copy())
 
     return center_history, label_history
+
+def hierarchical_clustering(X, method='ward'):
+    return linkage(X, method=method)
