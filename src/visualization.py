@@ -3,8 +3,6 @@ import plotly.express as px
 import plotly.graph_objs as go
 
 
-# sns.set_theme()
-# カスタムカラーシーケンス
 colors = px.colors.qualitative.Plotly
 
 
@@ -44,18 +42,17 @@ def animation_kmeans(X, center_history, label_history):
                     }
                 ],
                 "direction": "left",
-                "pad": {"r": 10, "t": 87},
+                # "pad": {"r": 10, "t": 87},
                 "showactive": False,
                 "type": "buttons",
-                "x": 0.1,
-                "xanchor": "right",
-                "y": -0.3,
+                "x": 0,
+                "xanchor": "left",
+                "y": -0.5,
                 "yanchor": "top"
             }],
             sliders=[{
                 "active": 0,
                 "currentvalue": {"prefix": "Iteration: "},
-                "pad": {"b": 10, "t": 50},
                 "steps": [
                     {"args": [[str(i)], {"frame": {"duration": 300, "redraw": True}, "mode": "immediate"}],
                      "label": f"Iteration {i + 1}",
@@ -99,5 +96,11 @@ def animation_kmeans(X, center_history, label_history):
     # 初期状態で最初のフレームを表示
     initial_frame = frames[0]['data']
     fig.add_traces(initial_frame)
-
+    fig.update_layout(legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=1.02,
+        xanchor="right",
+        x=1
+    ))
     return fig
