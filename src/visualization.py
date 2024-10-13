@@ -1,64 +1,106 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.figure as figure
 import matplotlib.animation as animation
-import seaborn as sns
+# import seaborn as sns
+import plotly.express as px
+import plotly.graph_objs as go
 
 
-sns.set_theme()
+# sns.set_theme()
+# カスタムカラーシーケンス
+colors = px.colors.qualitative.Plotly
 
 
 def plot_dataset(df):
-    xlim = (df['x'].min() - 0.1, df['x'].max() + 0.1)
-    ylim = (df['y'].min() - 0.1, df['y'].max() + 0.1)
-    height = 1
-    fig, ax = plt.subplots(figsize=(height * (xlim[1] - xlim[0]) / (ylim[1] - ylim[0]), height))
-    # fig, ax = plt.subplots(figsize=[3, 3])
+    # Plotly Expressで散布図を作成
+    df['label'] = df['label'].astype('category')
+    fig = px.scatter(df, x='x', y='y', color='label',
+                     size_max=10, opacity=0.6,
+                     height=300, color_discrete_sequence=colors)
 
-    ax.scatter(df['x'], df['y'], c=df['label'], s=1, cmap='tab10')
-    ax.set_aspect('equal')
-    ax.set_xlim(xlim)
-    ax.set_ylim(ylim)
-    ax.set_xticks([])
-    ax.set_yticks([])
+    # レイアウト調整
+    fig.update_layout(
+        xaxis=dict(ticks='', showticklabels=False, scaleanchor='y'),
+        yaxis=dict(ticks='', showticklabels=False),
+        showlegend=False
+    )
+
     return fig
 
 def animation_kmeans(X, center_history, label_history):
-    xlim = (X[:, 0].min() - 0.1, X[:, 0].max() + 0.1)
-    ylim = (X[:, 1].min() - 0.1, X[:, 1].max() + 0.1)
-    height = 4
-    fig, ax = plt.subplots(figsize=(height * (xlim[1] - xlim[0]) / (ylim[1] - ylim[0]), height))
+    # 初期プロット
+    fig = go.Figure(
+        layout=go.Layout(
+            xaxis=dict(ticks='', showticklabels=False, scaleanchor='y'),
+            yaxis=dict(ticks='', showticklabels=False),
+            updatemenus=[{
+                "buttons": [
+                    {
+                        "args": [None, {"frame": {"duration": 500, "redraw": True}, "fromcurrent": True}],
+                        "label": "Play",
+                        "method": "animate"
+                    },
+                    {
+                        "args": [[None], {"frame": {"duration": 0, "redraw": True}, "mode": "immediate"}],
+                        "label": "Pause",
+                        "method": "animate"
+                    }
+                ],
+                "direction": "left",
+                "pad": {"r": 10, "t": 87},
+                "showactive": False,
+                "type": "buttons",
+                "x": 0.1,
+                "xanchor": "right",
+                "y": -0.3,
+                "yanchor": "top"
+            }],
+            sliders=[{
+                "active": 0,
+                "currentvalue": {"prefix": "Iteration: "},
+                "pad": {"b": 10, "t": 50},
+                "steps": [
+                    {"args": [[str(i)], {"frame": {"duration": 300, "redraw": True}, "mode": "immediate"}],
+                     "label": f"Iteration {i + 1}",
+                     "method": "animate"} for i in range(len(label_history))
+                ]
+            }]
+        )
+    )
 
-    def update(step):
-        ax.clear()
-        ax.set_title(f'Iteration {step + 1}')
-
-        # Plot points based on current labels
+    # フレームを作成
+    frames = []
+    for step in range(len(label_history)):
+        frame_data = []
+        
+        # クラスタのラベルごとに点を追加
         unique_labels = np.unique(label_history[step])
         for i in unique_labels:
-            ax.scatter(
-                X[label_history[step] == i, 0],
-                X[label_history[step] == i, 1],
-                label=f'Cluster {i + 1}',
-                alpha=0.6
-            )
+            frame_data.append(go.Scatter(
+                x=X[label_history[step] == i, 0],
+                y=X[label_history[step] == i, 1],
+                mode='markers',
+                marker=dict(size=10, opacity=0.6, color=colors[i]),
+                name=f'Cluster {i + 1}'
+            ))
 
-        # Plot center points
-        ax.scatter(
-            center_history[step][:, 0],
-            center_history[step][:, 1],
-            c='black',
-            marker='x',
-            s=30,
-            label='Centroids'
-        )
+        # セントロイド（クラスタ中心）の追加
+        frame_data.append(go.Scatter(
+            x=center_history[step][:, 0],
+            y=center_history[step][:, 1],
+            mode='markers',
+            marker=dict(symbol='x', size=12, color='black'),
+            name='Centroids'
+        ))
 
-        ax.legend()
-        ax.set_aspect('equal')
-        ax.set_xlim(np.min(X[:, 0]) - 1, np.max(X[:, 0]) + 1)
-        ax.set_ylim(np.min(X[:, 1]) - 1, np.max(X[:, 1]) + 1)
-        ax.set_xticks([])
-        ax.set_yticks([])
+        # フレーム追加
+        frames.append(go.Frame(data=frame_data, name=str(step)))
 
-    anim = animation.FuncAnimation(fig, update, frames=len(label_history), interval=750)
-    return anim
+    # フレームを追加
+    fig.frames = frames
+
+    # 初期状態で最初のフレームを表示
+    initial_frame = frames[0]['data']
+    fig.add_traces(initial_frame)
+
+    return fig

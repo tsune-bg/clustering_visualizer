@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import os
 import streamlit.components.v1 as components
+import plotly.io as pio
+pio.templates.default = "plotly"
 
 from src import visualization, clustering
 
@@ -23,7 +25,7 @@ with col2:
     df = pd.read_csv(file_path)
 
     fig = visualization.plot_dataset(df)
-    st.pyplot(fig, use_container_width=False)
+    st.plotly_chart(fig, theme=None)
 
 col1, col2 = st.columns(2)
 
@@ -36,6 +38,5 @@ start_button = st.button("Start Animation")
 if start_button:
     X = df[['x', 'y']].to_numpy()
     center_history, label_history = clustering.kmeans(X, k, random_state)
-    anim = visualization.animation_kmeans(X, center_history, label_history)
-
-    components.html(anim.to_jshtml(), height=1000, scrolling=True)
+    fig = visualization.animation_kmeans(X, center_history, label_history)
+    st.plotly_chart(fig, theme=None)
