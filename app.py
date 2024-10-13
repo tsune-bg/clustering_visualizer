@@ -1,14 +1,13 @@
 import streamlit as st
 import pandas as pd
 import os
-import streamlit.components.v1 as components
 import plotly.io as pio
-pio.templates.default = "plotly"
 
 from src import visualization, clustering
 
 
 DATASETS_DIR = './data'
+pio.templates.default = "plotly"
 
 
 # タイトルの表示

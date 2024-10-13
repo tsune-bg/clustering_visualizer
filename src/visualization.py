@@ -1,7 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-# import seaborn as sns
 import plotly.express as px
 import plotly.graph_objs as go
 
