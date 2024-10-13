@@ -1,7 +1,5 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # Function to generate uniformly distributed points in a circle with correct density
 def generate_uniform_circle_data(radius, center, num_points):
@@ -48,24 +46,3 @@ target_dir = 'datasets/'
 df1.to_csv(target_dir + 'equal_radius_circles.csv', index=False)
 df2.to_csv(target_dir + 'different_radius_circles.csv', index=False)
 df3.to_csv(target_dir + 'semicircles_with_noise.csv', index=False)
-
-
-# Visualize the corrected three datasets
-# fig, ax = plt.subplots(1, 3, figsize=(18, 6))
-
-# # Dataset 1: Equal Radius Non-overlapping Circles with Labels
-# ax[0].scatter(df1['x'], df1['y'], c=df1['label'], cmap='tab10', label='Dataset 1')
-# ax[0].set_title('Dataset 1: Equal Radius Circles (Labeled)')
-# ax[0].set_aspect('equal')
-
-# # Dataset 2: Different Radius Non-overlapping Circles with Labels
-# ax[1].scatter(df2['x'], df2['y'], c=df2['label'], cmap='tab10', label='Dataset 2')
-# ax[1].set_title('Dataset 2: Different Radius Circles (Labeled)')
-# ax[1].set_aspect('equal')
-
-# # Dataset 3: Semicircles with Gaussian Noise with Labels
-# ax[2].scatter(df3['x'], df3['y'], c=df3['label'], cmap='tab10', label='Dataset 3')
-# ax[2].set_title('Dataset 3: Semicircles with Gaussian Noise (Labeled)')
-# ax[2].set_aspect('equal')
-
-# plt.show()
