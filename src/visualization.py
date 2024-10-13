@@ -75,9 +75,7 @@ def animation_hierarchical_clustering(X, Z):
     dendrogram(Z, ax=ax2, no_plot=True)
     ax2.set_title('Dendrogram')
 
-    # link_colors = {i: 'gray' for i in range(len(Z))}
-
-    lines =[]
+    lines = []
     def update(i):
         # 既存の線をクリア（デンドログラム更新用）
         ax2.cla()
@@ -99,11 +97,6 @@ def animation_hierarchical_clustering(X, Z):
             'r-', lw=2
         )
         lines.append(line)
-
-        # # 現在の結合ステップを赤、過去の結合を黒に設定
-        # link_colors[i] = 'red'  # 現在のリンクは赤色に設定
-        # for j in range(i):
-        #     link_colors[j] = 'black'  # 過去のリンクは黒色に設定
 
         # デンドログラムの更新（i+1回目の結合を表示）
         dendrogram(Z, ax=ax2, color_threshold=Z[i, 2], no_labels=True)
